@@ -19,6 +19,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.console import Console
 from rich.text import Text
+import psutil
 def gradient_3(text):
     def rgb_to_ansi(r, g, b):
         return f"\033[38;2;{r};{g};{b}m"
