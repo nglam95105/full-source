@@ -91,7 +91,7 @@ def nhan_sub(list, ckvp):
 def delay(dl):
   try:
     for i in range(dl, -1, -1):
-       print('\033[1;95m[PHUOCAN]\033[1;93m['+str(i)+' \033[1;92mGiây]           ',end='\r')
+       print('\033[1;95m[THUYTRANG]\033[1;93m['+str(i)+' \033[1;92mGiây]           ',end='\r')
        sleep(1)
   except:
      sleep(dl)
@@ -154,36 +154,64 @@ def cau_hinh(id_ig, ckvp):
 	a=requests.post('https://vipig.net/cauhinh/datnick.php', headers=headers, data={'iddat[]':id_ig}).text
 	return a
 
+
 while True:
-	print(thanh)
-	token = input('\033[1;32mNhập Access_Token Vipig:\033[1;33m ')
-	log = requests.post('https://vipig.net/logintoken.php', headers={'Content-type':'application/x-www-form-urlencoded'}, data={'access_token':token}).json()
-	if log['status'] == 'success':
-		user = log['data']['user']
-		xu = log['data']['sodu']
-		ckvp = cookie(token)
-		print('\033[1;32mĐăng Nhập Thành Công ')
-		break
-		token.read(token)
-	elif log['status'] == 'fail':
-		print(log['mess'])
+    print(thanh)
+    token = ""
+    if os.path.exists("vipig_token.txt"):
+        with open("vipig_token.txt", "r", encoding="utf-8") as tf:
+            token = tf.read().strip()
+        if token:
+            print(f"{luc}Đã tải Access_Token từ vipig_token.txt: {vang}{token}")
+    if not token:
+        token = input(f"{luc}Nhập Access_Token Vipig:{vang} ")
+    log = requests.post('https://vipig.net/logintoken.php', headers={'Content-type':'application/x-www-form-urlencoded'}, data={'access_token':token}).json()
+    if log['status'] == 'success':
+        user = log['data']['user']
+        xu = log['data']['sodu']
+        ckvp = cookie(token)
+        print(f"{luc}Đăng Nhập Thành Công ")
+        with open("vipig_token.txt", "w", encoding="utf-8") as tf:
+            tf.write(token)
+        break
+    elif log['status'] == 'fail':
+        print(log['mess'])
 os.system("cls" if os.name == "nt" else "clear")
 banner()
 x = 0
 print('\033[1;32m[LƯU Ý] Muốn Dừng Nhập Cookie Thì Nhấn Enter')
+
 while True:
-	x = x +1
-	print(thanh)
-	cookie = input(Colorate.Diagonal(Colors.red_to_green,f'Nhập Cookie Instagram Thứ {x} : '))
-	if cookie == '' and x > 1:
-		break
-	ten = name(cookie)
-	if ten[0] != 'die':
+    x = x + 1
+    print(thanh)
+    if os.path.exists("cookies.txt") and x == 1:
+        with open("cookies.txt", "r", encoding="utf-8") as cf:
+            saved_cookies = [c.strip() for c in cf if c.strip()]
+        if saved_cookies:
+            print(f"{luc}Đã tải {len(saved_cookies)} cookie từ cookies.txt")
+            list_cookie.extend(saved_cookies)
+            break
+    cookie = input(Colorate.Diagonal(Colors.red_to_green,f'Nhập Cookie Instagram Thứ {x} : '))
+    if cookie == '' and x > 1:
+        break
+    ten = name(cookie)
+    if ten[0] != 'die':
+        print(thanh)
+        print(f'\033[1;32mUser Acc IG\033[1;95m : {ten[0]} | \033[1;32mCookie : Live ✔️')
+        list_cookie.append(cookie)
+        with open("cookies.txt", "a", encoding="utf-8") as cf:
+            cf.write(cookie + "\n")
+    else:
+        print('\033[1;31mCookie Instagram Die Hoạc Sai Định Dạng ! Vui Lòng Nhập Lại !!! ')
+        x = x - 1
+
+ten = name(cookie)
+if ten[0] != 'die':
 		print(thanh)
 		print(f'\033[1;32mUser Acc IG\033[1;95m : {ten[0]} | \033[1;32mCookie : Live ✔️')
 		list_cookie.append(cookie)
 		
-	else:
+else:
 		print('\033[1;31mCookie Instagram Die Hoạc Sai Định Dạng ! Vui Lòng Nhập Lại !!! ')
 		x = x-1
 		
