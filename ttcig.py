@@ -155,6 +155,8 @@ def cau_hinh(id_ig, ckvp):
 	return a
 
 
+
+# --- VIPIG LOGIN SECTION ---
 while True:
     print(thanh)
     token = ""
@@ -163,16 +165,24 @@ while True:
             token = tf.read().strip()
         if token:
             print(f"{luc}Đã tải Access_Token từ vipig_token.txt: {vang}{token}")
-    if not token:
-        token = input(f"{luc}Nhập Access_Token Vipig:{vang} ")
-    log = requests.post('https://vipig.net/logintoken.php', headers={'Content-type':'application/x-www-form-urlencoded'}, data={'access_token':token}).json()
+            choice = input(f"{luc}Dùng acc Vipig đã lưu? (y/n): {vang}").strip().lower()
+            if choice == 'n':
+                token = input(f"{luc}Nhập Access_Token Vipig mới:{vang} ").strip()
+                with open("vipig_token.txt", "w", encoding="utf-8") as tf:
+                    tf.write(token)
+    else:
+        token = input(f"{luc}Nhập Access_Token Vipig:{vang} ").strip()
+        with open("vipig_token.txt", "w", encoding="utf-8") as tf:
+            tf.write(token)
+
+    log = requests.post('https://vipig.net/logintoken.php',
+                        headers={'Content-type':'application/x-www-form-urlencoded'},
+                        data={'access_token':token}).json()
     if log['status'] == 'success':
         user = log['data']['user']
         xu = log['data']['sodu']
         ckvp = cookie(token)
-        print(f"{luc}Đăng Nhập Thành Công ")
-        with open("vipig_token.txt", "w", encoding="utf-8") as tf:
-            tf.write(token)
+        print(f"{luc}Đăng Nhập Thành Công Vipig | Tài khoản: {vang}{user} | Xu: {vang}{xu}")
         break
     elif log['status'] == 'fail':
         print(log['mess'])
@@ -435,4 +445,49 @@ while True:
 							print(f'\033[1;32m Commet : \033[1;39m{id} \033[1;31mThất bại. ')
 							loi_cmt += 1
 							delay(dl)
-							
+						
+# --- INSTAGRAM COOKIE LOADING ---
+print(f"{luc}Đang tải cookie Instagram...")
+if os.path.exists("cookies.txt"):
+    with open("cookies.txt", "r", encoding="utf-8") as cf:
+        saved_cookies = [c.strip() for c in cf if c.strip()]
+    if saved_cookies:
+        print(f"{luc}Đã tải {len(saved_cookies)} cookie IG từ file.")
+        # Show usernames
+        for idx, ck in enumerate(saved_cookies, 1):
+            ten = name(ck)
+            if ten[0] != 'die':
+                print(f"{vang}{idx}. {luc}{ten[0]} | Cookie Live ✔️")
+            else:
+                print(f"{vang}{idx}. {red}Cookie Die ❌")
+        use_saved = input(f"{luc}Dùng toàn bộ cookie IG đã lưu? (y/n): {vang}").strip().lower()
+        if use_saved == 'y':
+            list_cookie.extend(saved_cookies)
+        else:
+            print(thanh)
+            print(f"{luc}Nhập cookie IG mới, Enter khi xong:")
+            while True:
+                cookie = input(Colorate.Diagonal(Colors.red_to_green,f'Nhập Cookie Instagram: '))
+                if cookie.strip() == '':
+                    break
+                ten = name(cookie)
+                if ten[0] != 'die':
+                    list_cookie.append(cookie)
+                    with open("cookies.txt", "a", encoding="utf-8") as cf:
+                        cf.write(cookie + "\n")
+                else:
+                    print(f"{red}Cookie Instagram Die hoặc sai định dạng!")
+else:
+    print(f"{luc}Chưa có cookies.txt, vui lòng nhập cookie IG mới:")
+    while True:
+        cookie = input(Colorate.Diagonal(Colors.red_to_green,f'Nhập Cookie Instagram: '))
+        if cookie.strip() == '':
+            break
+        ten = name(cookie)
+        if ten[0] != 'die':
+            list_cookie.append(cookie)
+            with open("cookies.txt", "a", encoding="utf-8") as cf:
+                cf.write(cookie + "\n")
+        else:
+            print(f"{red}Cookie Instagram Die hoặc sai định dạng!")
+	
